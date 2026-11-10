@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perjalanan Kita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#e8647c; --rose-soft:#fde8ec; --cream:#fff9f5; --ink:#3b2a30; --muted:#8a7279; --gold:#d9a55b;
+    --card:#ffffff; --shadow:0 10px 30px rgba(232,100,124,.15);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Poppins',sans-serif;background:var(--cream);color:var(--ink);line-height:1.7;overflow-x:hidden}
+  h1,h2,h3{font-family:'Playfair Display',serif}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:center;gap:24px;padding:14px 16px;
+      background:rgba(255,249,245,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--rose-soft)}
+  nav a{color:var(--ink);text-decoration:none;font-size:.85rem;letter-spacing:.5px}
+  nav a:hover{color:var(--rose)}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+        padding:100px 20px 60px;position:relative;
+        background:linear-gradient(160deg,#ffe3e8 0%,#fff3ec 55%,#fff9f5 100%)}
+  .hero.has-bg{background-size:cover;background-position:center}
+  .hero.has-bg::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.35)}
+  .hero > *{position:relative}
+  .hero.has-bg h1,.hero.has-bg p,.hero.has-bg .tag{color:#fff}
+  .tag{letter-spacing:4px;font-size:.75rem;color:var(--rose);text-transform:uppercase;margin-bottom:16px}
+  .hero h1{font-size:clamp(2.4rem,8vw,5rem);line-height:1.15}
+  .hero h1 .amp{color:var(--rose);font-style:italic;padding:0 .15em}
+  .hero p.sub{max-width:520px;margin-top:18px;color:var(--muted)}
+  .counter{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;justify-content:center}
+  .counter div{background:var(--card);border-radius:18px;padding:14px 20px;min-width:84px;box-shadow:var(--shadow)}
+  .counter b{display:block;font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--rose)}
+  .counter span{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .scroll{margin-top:44px;color:var(--rose);animation:bob 1.8s infinite;text-decoration:none;font-size:1.6rem}
+  @keyframes bob{50%{transform:translateY(8px)}}
+
+  /* SECTIONS */
+  section{padding:90px 20px;max-width:1100px;margin:0 auto}
+  .title{text-align:center;margin-bottom:50px}
+  .title h2{font-size:clamp(1.8rem,5vw,2.8rem)}
+  .title p{color:var(--muted)}
+  .title .line{width:60px;height:3px;background:var(--rose);margin:14px auto 0;border-radius:3px}
+
+  /* TIMELINE */
+  .timeline{position:relative}
+  .timeline::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(var(--rose-soft),var(--rose),var(--rose-soft));transform:translateX(-50%)}
+  .item{position:relative;width:50%;padding:0 40px 50px 0;opacity:0;transform:translateY(30px);transition:.7s}
+  .item.show{opacity:1;transform:none}
+  .item:nth-child(even){margin-left:50%;padding:0 0 50px 40px}
+  .item::after{content:"♥";position:absolute;top:8px;right:-13px;width:26px;height:26px;border-radius:50%;background:var(--rose);color:#fff;
+               display:flex;align-items:center;justify-content:center;font-size:.8rem;box-shadow:0 0 0 6px var(--rose-soft)}
+  .item:nth-child(even)::after{right:auto;left:-13px}
+  .card{background:var(--card);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+  .date{font-size:.75rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;font-weight:500}
+  .card h3{font-size:1.4rem;margin:4px 0}
+  .place{font-size:.85rem;color:var(--rose)}
+  .card p.story{margin-top:10px;color:var(--muted);font-size:.92rem}
+  .media-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:14px}
+
+  /* MEDIA */
+  .m{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;cursor:pointer;background:var(--rose-soft)}
+  .m img,.m video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+  .m:hover img,.m:hover video{transform:scale(1.07)}
+  .m .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;background:rgba(0,0,0,.2);pointer-events:none}
+  .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+      background:linear-gradient(135deg,#ffd9e0,#ffe9d6);color:var(--rose);font-size:.7rem;text-align:center;padding:6px}
+  .ph i{font-size:1.5rem;font-style:normal}
+
+  /* GALLERY */
+  .gallery{columns:3 240px;column-gap:14px}
+  .gallery .m{aspect-ratio:auto;margin-bottom:14px;break-inside:avoid}
+  .gallery .m:nth-child(3n+1){aspect-ratio:3/4}
+  .gallery .m:nth-child(3n+2){aspect-ratio:1}
+  .gallery .m:nth-child(3n){aspect-ratio:4/5}
+  .cap{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 10px;color:#fff;font-size:.8rem;background:linear-gradient(transparent,rgba(0,0,0,.6));opacity:0;transition:.3s}
+  .m:hover .cap{opacity:1}
+
+  /* LETTER */
+  .letter{background:var(--card);border-radius:24px;padding:40px 30px;box-shadow:var(--shadow);max-width:700px;margin:0 auto;text-align:center;border:1px dashed var(--rose)}
+  .letter h3{font-size:1.8rem;color:var(--rose);margin-bottom:14px}
+  .letter p{white-space:pre-line;color:var(--muted)}
+
+  footer{text-align:center;padding:40px 20px 60px;color:var(--muted);font-size:.85rem}
+  footer b{color:var(--rose)}
+
+  /* LAYAR PEMBUKA & TOMBOL MUSIK */
+  #gate{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;
+        background:linear-gradient(160deg,#ffe3e8,#fff3ec);transition:opacity .6s}
+  #gate.hide{opacity:0;pointer-events:none}
+  #gate .big{font-size:3.5rem;color:var(--rose);animation:beat 1.2s infinite}
+  @keyframes beat{50%{transform:scale(1.15)}}
+  #gate h2{font-size:clamp(1.6rem,6vw,2.6rem);margin:10px 0 6px}
+  #gate p{color:var(--muted);margin-bottom:26px}
+  #gate button{background:var(--rose);color:#fff;border:none;border-radius:40px;padding:14px 34px;font:500 1rem 'Poppins',sans-serif;cursor:pointer;box-shadow:var(--shadow)}
+  #gate button:hover{filter:brightness(1.08)}
+  #musicBtn{position:fixed;right:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;border:none;background:var(--rose);color:#fff;
+            font-size:1.3rem;cursor:pointer;box-shadow:var(--shadow);display:none;align-items:center;justify-content:center}
+
+  /* LIGHTBOX */
+  #lb{position:fixed;inset:0;background:rgba(20,10,14,.92);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;flex-direction:column}
+  #lb.open{display:flex}
+  #lb img,#lb video{max-width:100%;max-height:82vh;border-radius:12px}
+  #lb .t{color:#fff;margin-top:12px;font-size:.9rem;text-align:center}
+  #lb button{position:absolute;background:none;border:none;color:#fff;font-size:2.2rem;cursor:pointer;padding:10px}
+  #lb .x{top:10px;right:16px} #lb .p{left:10px;top:50%} #lb .n{right:10px;top:50%}
+
+  /* floating hearts */
+  .heart{position:fixed;bottom:-30px;color:var(--rose);opacity:.5;pointer-events:none;animation:up linear forwards;z-index:1}
+  @keyframes up{to{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+
+  @media(max-width:700px){
+    .timeline::before{left:16px}
+    .item,.item:nth-child(even){width:100%;margin-left:0;padding:0 0 40px 46px}
+    .item::after,.item:nth-child(even)::after{left:3px;right:auto}
+    nav{gap:14px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#home">Awal</a><a href="#cerita">Perjalanan</a><a href="#galeri">Galeri</a><a href="#surat">Surat</a>
+</nav>
+
+<header class="hero" id="home">
+  <div class="tag">Our Journey</div>
+  <h1><span id="n1"></span><span class="amp">&amp;</span><span id="n2"></span></h1>
+  <p class="sub" id="subtitle"></p>
+  <div class="counter">
+    <div><b id="cy">0</b><span>Tahun</span></div>
+    <div><b id="cm">0</b><span>Bulan</span></div>
+    <div><b id="cd">0</b><span>Hari</span></div>
+    <div><b id="ch">0</b><span>Jam</span></div>
+  </div>
+  <a href="#cerita" class="scroll">↓</a>
+</header>
+
+<section id="cerita">
+  <div class="title"><h2>Perjalanan Kita</h2><p>Setiap langkah bersamamu adalah kenangan</p><div class="line"></div></div>
+  <div class="timeline" id="timeline"></div>
+</section>
+
+<section id="galeri">
+  <div class="title"><h2>Galeri Kenangan</h2><p>Foto &amp; video favorit kita</p><div class="line"></div></div>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section id="surat">
+  <div class="letter">
+    <h3 id="letterTitle"></h3>
+    <p id="letterText"></p>
+  </div>
+</section>
+
+<footer>Dibuat dengan Abrar <b>♥</b> untuk <span id="fn"></span></footer>
+
+<div id="gate">
+  <div class="big">♥</div>
+  <h2 id="gateTitle"></h2>
+  <p id="gateText"></p>
+  <button id="gateOpen">Ketuk untuk membuka</button>
+</div>
+<button id="musicBtn" title="Putar / jeda musik">🎵</button>
+
+<div id="lb">
+  <button class="x" onclick="closeLB()">×</button>
+  <button class="p" onclick="step(-1)">‹</button>
+  <button class="n" onclick="step(1)">›</button>
+  <div id="lbBody"></div><div class="t" id="lbCap"></div>
+</div>
+
+<script>
+/* =====================================================================
+   ✏️  BAGIAN 1 — PENGATURAN UTAMA  (EDIT DI SINI)
+   ===================================================================== */
+const CONFIG = {
+  nama1: "Abrar",                 // ← ganti nama kamu
+  nama2: "Tiara",                  // ← ganti nama kekasihmu
+  tanggalJadian: "2023-04-06T00:00:00",   // ← format TAHUN-BULAN-TANGGAL (T jam:menit:detik)
+  subjudul: "Cerita tentang dua hati yang berjalan bersama.",
+
+  // Foto latar halaman depan (boleh dikosongkan: "" )
+  fotoLatar: "",                 // ← contoh: "media/cover.jpg"
+
+  // 🎵 MUSIK LATAR — taruh file lagu (.mp3) di folder "media", lalu tulis namanya
+  musik: {
+    file: "media/Olivia.mp3.mpeg",            // ← ganti nama file lagu; kosongkan "" jika tidak mau musik
+    volume: 1,                       // 0 (hening) sampai 1 (paling keras)
+    judulGerbang: "Ada sesuatu untukmu",          // teks di layar pembuka
+    teksGerbang: "Nyalakan suara untuk pengalaman terbaik 🎧"
+  },
+
+  // Surat di bagian bawah
+  judulSurat: "Untuk Kamu, Cintaku",
+  isiSurat: "Terima kasih sudah menjadi rumah untuk setiap perjalanan.\nApa pun tujuannya, aku ingin selalu bersamamu."
+};
+
+/* =====================================================================
+   📸  BAGIAN 2 — PERJALANAN / TIMELINE  (TAMBAH FOTO & VIDEO DI SINI)
+
+   Cara pakai:
+   1. Buat folder bernama "media" di samping file index.html ini.
+   2. Masukkan foto/video ke folder tersebut (misal: media/bali1.jpg).
+   3. Tulis nama file-nya di dalam  media: [ ... ]  seperti contoh.
+
+   Untuk FOTO  : { type: "image", src: "media/namafile.jpg" }
+   Untuk VIDEO : { type: "video", src: "media/namafile.mp4" }
+
+   Mau tambah perjalanan baru? Salin satu blok { ... }, tempel di bawahnya
+   (jangan lupa koma di antara blok).
+   ===================================================================== */
+const JOURNEY = [
+  {
+    date: "16 Januari 2023",
+    title: "Hari Pertama Kita",
+    place: "📍 TanahBaru",
+    story: "Awal pertama ketemu denganmu. Canggung dan kamu sangat ceria, aku pikir kamu juga orang yang pendiem kaya aku ternyata kamu asik juga hehehehe, aku sampai bingung harus ngomong apa nanti pas awal ketemu akhirnya aku minta tolong sama temen aku buat bantuin aku heheheh. Tapi di hari itu adalah hal sesuatu yang pertama kali berbeda dihidup aku.",
+    media: [
+      { type: "image", src: "media/pertama.jpeg" },       // ← FOTO
+      { type: "image", src: "media/kedua.jpeg" }        // ← FOTO
+    ]
+  },
+  {
+    date: "6 Mei 2023",
+    title: "Liburan Pertama",
+    place: "📍 Ragunan",
+    story: "Menyusuri Ragunan kita berdua sambil bercerita, Kita waktu itu pernah makan pecel karena kita capek jalan-jalan kita juga ga bawa karpet buat istirahat akhirnya kita memutuskan beli pecel buat nummpang istirahat ahahahah, disitu juga aku gerah mulu karna panas ahahahaha tapi itu asik juga kita jalan jalan keragunan pertama kali bareng-bareng.",
+    media: [
+      { type: "image", src: "media/ketiga.jpeg" },      // ← FOTO
+      { type: "video", src: "media/vidiopertama.mp4" }   // ← VIDEO
+    ]
+  },
+  {
+    date: "9 November 2025",
+    title: "Pergi ke Caffe",
+    place: "📍 TanahBaru",
+    story: "Waktu itu kita pergi ke caffe baru dideket rumah aku, Dan kita bikin lukisan kucing berdua yang dari kamu ehehehe, kita waktu itu juga belum sempet kelarin lukisannya karna udah malem juga dan akhirnya kita mutusin buat pulang tapi kita juga ga langsung karna kita jalan-jalan dulu ahahahahah, Dan sampe sekarang lukisan kucing nya juga belum kelar kelar ahahahaha.",
+    media: [
+      { type: "image", src: "media/keempat.jpeg" },
+      { type: "video", src: "media/vidiokedua.mp4" },
+      { type: "video", src: "media/vidioketiga.mp4" }
+    ]
+  }
+  // ← TAMBAH PERJALANAN BARU DI SINI (salin blok di atas)
+];
+
+/* =====================================================================
+   🖼️  BAGIAN 3 — GALERI KENANGAN  (TAMBAH FOTO & VIDEO DI SINI)
+   Satu baris = satu foto/video. "caption" muncul saat kursor di atasnya.
+   ===================================================================== */
+const GALLERY = [
+  { type: "image", src: "media/galeri1.jpeg", caption: "Hitam & Ungu" },
+  { type: "image", src: "media/galeri2.jpeg", caption: "Merah yang lucu" },
+  { type: "video", src: "media/galerividio.mp4", caption: "Momen kita" },
+  { type: "image", src: "media/galeri3.jpeg", caption: "Happy Birtday" },
+  { type: "image", src: "media/galeri4.jpeg", caption: "Anniversary" },
+  { type: "image", src: "media/galeri5.jpeg", caption: "Selfie Random" }
+  // ← TAMBAH FOTO/VIDEO BARU DI SINI
+];
+
+/* =====================================================================
+   ⚙️  BAGIAN 4 — KODE WEBSITE (tidak perlu diubah)
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+let ALL = [];   // semua media untuk lightbox
+let cur = 0;
+
+// Teks dasar
+$('#n1').textContent = CONFIG.nama1;
+$('#n2').textContent = CONFIG.nama2;
+$('#fn').textContent = CONFIG.nama2;
+$('#subtitle').textContent = CONFIG.subjudul;
+$('#letterTitle').textContent = CONFIG.judulSurat;
+$('#letterText').textContent = CONFIG.isiSurat;
+document.title = CONFIG.nama1 + " & " + CONFIG.nama2 + " — Perjalanan Kita";
+if (CONFIG.fotoLatar) {
+  const h = $('#home');
+  h.style.backgroundImage = `url('${CONFIG.fotoLatar}')`;
+  h.classList.add('has-bg');
+}
+
+// Hitung waktu bersama
+function tick(){
+  const s = new Date(CONFIG.tanggalJadian), n = new Date();
+  let y = n.getFullYear() - s.getFullYear();
+  let m = n.getMonth() - s.getMonth();
+  if (n.getDate() < s.getDate()) m--;
+  if (m < 0) { y--; m += 12; }
+  const days = Math.floor((n - s) / 864e5);
+  const hours = Math.floor((n - s) / 36e5);
+  $('#cy').textContent = Math.max(y,0);
+  $('#cm').textContent = Math.max(m,0);
+  $('#cd').textContent = Math.max(days,0).toLocaleString('id-ID');
+  $('#ch').textContent = Math.max(hours,0).toLocaleString('id-ID');
+}
+tick(); setInterval(tick, 60000);
+
+// Buat elemen media
+function makeMedia(item, caption){
+  const idx = ALL.push({ ...item, caption: caption || '' }) - 1;
+  const el = document.createElement('div');
+  el.className = 'm';
+  const fallback = () => {
+    el.innerHTML = `<div class="ph"><i>${item.type==='video'?'🎬':'📷'}</i>${item.src}</div>`;
+  };
+  if (item.type === 'video') {
+    const v = document.createElement('video');
+    v.src = item.src + '#t=0.5'; v.muted = true; v.preload = 'metadata'; v.playsInline = true;
+    v.onerror = fallback;
+    el.appendChild(v);
+    el.insertAdjacentHTML('beforeend', '<div class="play">▶</div>');
+  } else {
+    const i = document.createElement('img');
+    i.src = item.src; i.loading = 'lazy'; i.alt = caption || '';
+    i.onerror = fallback;
+    el.appendChild(i);
+  }
+  if (caption) el.insertAdjacentHTML('beforeend', `<div class="cap">${caption}</div>`);
+  el.onclick = () => openLB(idx);
+  return el;
+}
+
+// Render timeline
+JOURNEY.forEach(j => {
+  const it = document.createElement('div');
+  it.className = 'item';
+  it.innerHTML = `<div class="card">
+    <div class="date">${j.date}</div><h3>${j.title}</h3>
+    <div class="place">${j.place || ''}</div><p class="story">${j.story || ''}</p>
+    <div class="media-row"></div></div>`;
+  const row = it.querySelector('.media-row');
+  (j.media || []).forEach(m => row.appendChild(makeMedia(m, j.title)));
+  if (!(j.media || []).length) row.remove();
+  $('#timeline').appendChild(it);
+});
+
+// Render galeri
+GALLERY.forEach(g => $('#gallery').appendChild(makeMedia(g, g.caption)));
+
+// Animasi muncul saat scroll
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('show')), { threshold: .15 });
+document.querySelectorAll('.item').forEach(i => io.observe(i));
+
+// Lightbox
+function openLB(i){
+  cur = i; const m = ALL[i]; const b = $('#lbBody');
+  b.innerHTML = m.type === 'video'
+    ? `<video src="${m.src}" controls autoplay playsinline></video>`
+    : `<img src="${m.src}" alt="">`;
+  $('#lbCap').textContent = m.caption;
+  $('#lb').classList.add('open');
+  // jeda musik latar saat video diputar
+  if (m.type === 'video' && bgAudio && !bgAudio.paused) { bgAudio.pause(); bgResume = true; }
+}
+function closeLB(){
+  $('#lb').classList.remove('open'); $('#lbBody').innerHTML = '';
+  if (bgResume && bgAudio) { bgAudio.play().catch(() => {}); bgResume = false; }
+}
+function step(d){ openLB((cur + d + ALL.length) % ALL.length); }
+document.addEventListener('keydown', e => {
+  if (!$('#lb').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLB();
+  if (e.key === 'ArrowRight') step(1);
+  if (e.key === 'ArrowLeft') step(-1);
+});
+$('#lb').addEventListener('click', e => { if (e.target.id === 'lb') closeLB(); });
+
+// Musik latar
+let bgAudio = null, bgResume = false;
+if (CONFIG.musik && CONFIG.musik.file) {
+  bgAudio = new Audio(CONFIG.musik.file);
+  bgAudio.loop = true;
+  bgAudio.volume = CONFIG.musik.volume ?? 0.5;
+  const gate = $('#gate'), btn = $('#musicBtn');
+  $('#gateTitle').textContent = CONFIG.musik.judulGerbang || '';
+  $('#gateText').textContent = CONFIG.musik.teksGerbang || '';
+  gate.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  const setBtn = () => { btn.textContent = bgAudio.paused ? '🔇' : '🎵'; };
+  bgAudio.addEventListener('play', setBtn);
+  bgAudio.addEventListener('pause', setBtn);
+  $('#gateOpen').onclick = () => {
+    bgAudio.play().catch(() => {});
+    gate.classList.add('hide');
+    setTimeout(() => gate.remove(), 600);
+    document.body.style.overflow = '';
+    btn.style.display = 'flex';
+    setBtn();
+  };
+  btn.onclick = () => { bgAudio.paused ? bgAudio.play().catch(() => {}) : bgAudio.pause(); };
+}
+
+// Hati melayang
+setInterval(() => {
+  const h = document.createElement('div');
+  h.className = 'heart'; h.textContent = '♥';
+  h.style.left = Math.random()*100 + 'vw';
+  h.style.fontSize = (12 + Math.random()*18) + 'px';
+  h.style.animationDuration = (6 + Math.random()*6) + 's';
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 12000);
+}, 1400);
+</script>
+</body>
+</html>
